@@ -1,7 +1,7 @@
-pandas==2.1.0
-numpy==1.25.2
-tensorflow==2.14.0
-jieba==0.42.1
+pandas
+numpy
+tensorflow
+jieba
 flask 
 torch 
 transformers
