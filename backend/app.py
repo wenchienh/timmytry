@@ -1,102 +1,82 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import tensorflow as tf
+import os
 import json
+import keras as kr
 import numpy as np
-from tensorflow.keras.preprocessing.sequence import pad_sequences
+import tensorflow as tf
+import jieba.posseg as pseg
+from flask import Flask, request, jsonify
 
-# 創建 Flask 應用
+# 設定 Flask 應用及相關環境變數
 app = Flask(__name__)
-CORS(app)  # 啟用跨域支持
 
-# 加載模型和輔助文件
-def load_model_and_resources():
-    """
-    加載 Keras 模型和詞彙表。
-    """
-    print("正在加載模型和詞彙表...")
-    try:
-        # 加載模型
-        model = tf.keras.models.load_model("FNCwithLSTM.h5")
-        print("模型加載成功！")
+# 全局參數
+MAX_SEQUENCE_LENGTH = 20
 
-        # 加載詞彙表
-        with open("word_index.json", "r", encoding="utf-8") as f:
-            word_index = json.load(f)
-        print("詞彙表加載成功！")
+# 模型及資料的相對路徑（建議將模型和JSON放在應用目錄中）
+MODEL_PATH = os.getenv("MODEL_PATH", "models/FNCwithLSTM.h5")
+WORD_INDEX_PATH = os.getenv("WORD_INDEX_PATH", "models/word_index.json")
 
-        return model, word_index
-    except Exception as e:
-        print(f"加載模型或詞彙表失敗：{e}")
-        raise
+# 加載已訓練模型
+model = kr.models.load_model(MODEL_PATH)
 
-# 加載模型和詞彙表
-model, word_index = load_model_and_resources()
+# 加載 word_index.json 並還原 Tokenizer
+with open(WORD_INDEX_PATH, 'r') as f:
+    word_index = json.load(f)
 
-# 定義預處理函數
-def preprocess_input(text, word_index, max_length=100):
-    """
-    將用戶輸入的文字轉換為數字數組，並進行填充。
-    """
-    try:
-        # 將輸入分詞（假設以空格分詞）
-        tokens = text.split()
+tokenizer = tf.keras.preprocessing.text.Tokenizer()
+tokenizer.word_index = word_index
+tokenizer.index_word = {index: word for word, index in word_index.items()}
 
-        # 將詞轉換為索引
-        sequences = [[word_index.get(word, 0) for word in tokens]]
+# 標籤字典
+label_to_index = {
+    'unrelated': 0,
+    'agreed': 1,
+    'disagreed': 2
+}
+index_to_label = {v: k for k, v in label_to_index.items()}
 
-        # 對序列進行填充
-        padded_sequence = pad_sequences(sequences, maxlen=max_length, padding="post")
-        return padded_sequence
-    except Exception as e:
-        print(f"預處理失敗：{e}")
-        raise
+# 分詞函數
+def jieba_tokenizer(text):
+    words = pseg.cut(text)
+    return ' '.join([word for word, flag in words if flag != 'x'])
 
-# 定義推理函數
-def run_model(input_text):
-    """
-    使用模型進行推理。
-    """
-    try:
-        # 預處理輸入
-        input_data = preprocess_input(input_text, word_index)
+# 預處理函數
+def preprocess_texts(title1, title2):
+    title1_tokenized = jieba_tokenizer(title1)
+    title2_tokenized = jieba_tokenizer(title2)
+    
+    x1_test = tokenizer.texts_to_sequences([title1_tokenized])
+    x2_test = tokenizer.texts_to_sequences([title2_tokenized])
+    
+    x1_test = kr.preprocessing.sequence.pad_sequences(x1_test, maxlen=MAX_SEQUENCE_LENGTH)
+    x2_test = kr.preprocessing.sequence.pad_sequences(x2_test, maxlen=MAX_SEQUENCE_LENGTH)
+    
+    return x1_test, x2_test
 
-        # 運行模型
-        prediction = model.predict(input_data)
+# 預測函數
+def predict_category(title1, title2):
+    x1_test, x2_test = preprocess_texts(title1, title2)
+    predictions = model.predict([x1_test, x2_test])
+    category_index = np.argmax(predictions, axis=1)[0]
+    return index_to_label[category_index]
 
-        # 將結果格式化
-        predicted_class = np.argmax(prediction, axis=-1)[0]  # 假設模型返回多分類結果
-        confidence = np.max(prediction, axis=-1)[0]          # 最大概率值
-
-        return {"predicted_class": int(predicted_class), "confidence": float(confidence)}
-    except Exception as e:
-        print(f"模型推理失敗：{e}")
-        raise
-
-# 定義 Flask 路由
+# 定義 API 路徑
 @app.route('/predict', methods=['POST'])
 def predict():
-    """
-    處理來自前端的請求，並返回模型結果。
-    """
     try:
-        # 獲取用戶輸入
-        data = request.get_json()
-        if not data or 'question' not in data:
-            return jsonify({'error': '請求數據格式錯誤，缺少 "question" 字段'}), 400
+        data = request.json
+        title1 = data.get('title1')
+        title2 = data.get('title2')
         
-        user_input = data['question']
-        print(f"接收到的輸入：{user_input}")
-
-        # 使用模型進行推理
-        result = run_model(user_input)
-
-        # 返回結果
-        return jsonify({'result': result})
+        if not title1 or not title2:
+            return jsonify({'error': 'Both title1 and title2 are required'}), 400
+        
+        category = predict_category(title1, title2)
+        return jsonify({'category': category})
+    
     except Exception as e:
-        print(f"處理請求失敗：{e}")
         return jsonify({'error': str(e)}), 500
 
-# 啟動 Flask 應用
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # 適合部署到生產環境的配置
+    app.run(host='0.0.0.0', port=5000, debug=False)
