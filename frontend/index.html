@@ -41,13 +41,19 @@
         </div>
 
         <section class="detect" id="detect">
-            <form action="">
-                <textarea type="fakeinput" placeholder="請輸入有疑慮的假消息" id="inputtext"></textarea>
+            <form id="detect-form">
+                <textarea placeholder="請輸入有疑慮的假消息" id="inputtext"></textarea>
                 <div class="button">
-                    <button type="submit" onclick="openNewWindow()"><img src="image/search.png" alt="" width="20px" height="20px"></button>
+                    <button type="button" id="submit-btn"><img src="image/search.png" alt="" width="20px" height="20px"></button>
                     <button type="reset"><img src="image/bin.png" alt="" width="20px" height="20px"></button>
                 </div>
             </form>
+            
+        </section>
+
+        <section class="result" id="result" style="display: none;">
+            <h3>分析結果</h3>
+            <p id="result-text"></p>
         </section>
 
         <section class="trend">
