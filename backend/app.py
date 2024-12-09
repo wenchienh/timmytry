@@ -13,7 +13,7 @@ app = Flask(__name__)
 MAX_SEQUENCE_LENGTH = 20
 
 # 模型及資料的相對路徑（建議將模型和JSON放在應用目錄中）
-MODEL_PATH = os.getenv("MODEL_PATH", "models/FNCwithLSTM.h5")
+MODEL_PATH = os.getenv("MODEL_PATH", "FNCwithLSTM.h5")
 WORD_INDEX_PATH = os.getenv("WORD_INDEX_PATH", "models/word_index.json")
 
 # 加載已訓練模型
