@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>shout-justice-Type</title>
-    <link rel="stylesheet" href="project-t.css">
+    <title>Document</title>
     <link rel="stylesheet" href="project.css">
+    <link rel="stylesheet" href="project-t.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap" rel="stylesheet">
@@ -27,12 +27,26 @@
         </ul>
         
     </header>
-    
-    
+
+
     
     <main class="typeweb">
         <section class="carticles">
             <section class="categories">
+                <div class="type">
+                    <ul>
+                        <li><a href="#" onclick="showSection('health')">健康</a></li>
+                        <li><a href="#" onclick="showSection('politics')">政治</a></li>
+                        <li><a href="#" onclick="showSection('commerce')">商業</a></li>
+                        <li><a href="#" onclick="showSection('taiwan')">台灣</a></li>
+                        <li><a href="#" onclick="showSection('eco')">經濟</a></li>
+                        <li><a href="#" onclick="showSection('ent')">娛樂</a></li>
+                        <li><a href="#" onclick="showSection('international')">國際</a></li>
+                        <li><a href="#" onclick="showSection('tech')">科技</a></li>
+                        <li><a href="#" onclick="showSection('pe')">體育</a></li>
+                    </ul>
+                </div>
+
                 <div class="select-container">
                     <select class="select-box" onchange="showSection(this.value)">
                         <option value="health">健康</option>
@@ -46,51 +60,34 @@
                         <option value="pe">體育</option>
                     </select>
                     <div class="icon-container">
-                        <p>▼</p>
+                        <p>🛆</p>
                     </div>
                 </div>
                 
                 <div id="articles-container">
-                    <div class="type">
-                        <ul>
-                            <li><a href="#" onclick="showSection('health')">健康</a></li>
-                            <li><a href="#" onclick="showSection('politics')">政治</a></li>
-                            <li><a href="#" onclick="showSection('commerce')">商業</a></li>
-                            <li><a href="#" onclick="showSection('taiwan')">台灣</a></li>
-                            <li><a href="#" onclick="showSection('eco')">經濟</a></li>
-                            <li><a href="#" onclick="showSection('ent')">娛樂</a></li>
-                            <li><a href="#" onclick="showSection('international')">國際</a></li>
-                            <li><a href="#" onclick="showSection('tech')">科技</a></li>
-                            <li><a href="#" onclick="showSection('pe')">體育</a></li>
-                        </ul>
-                    </div>
+                        
                     <div class="articles" id="articles">
-                        <div class="articles-list">
                             <!-- Articles will be displayed here -->
-                            
-                        </div>   
                     </div>
+                        
                 </div>
                 
             </section>
         </section>
         <section class="divide"></section>
-        <section class="divide-horizon"></section>
         <section class="side">
             <section class="topics">
                 <h5>Recommended Topics</h5>
                 <ul>
-                    <li># <a href="">健保給付</a></li>
+                    <li># <a href="">健保</a></li>
                     <li># <a href="">食安危機</a></li>
                     <li># <a href="">學費</a></li>
-                    <li># <a href="">失業人口</a></li>
+                    <li># <a href="">失業率</a></li>
                     <li># <a href="">颱風</a></li>
                     <li># <a href="">海龜</a></li>
                     <li># <a href="">購物</a></li>
                     <li># <a href="">脫口秀</a></li>
                     <li># <a href="">臭氧層</a></li>
-                    <li># <a href="">國旅CP值</a></li>
-                    <li># <a href="">汽車駕照</a></li>
                 </ul>
             </section>
         </section>

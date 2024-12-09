@@ -1,25 +1,106 @@
-main{
-    height: 800px;
+.typeweb{
+    
+    width: 90vw;
+    margin-left: 5vw;
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    
+}
+/*carticles start*/
+.carticles{
+    width: 65%;
+    margin: 0;
+    
+    padding: 0 10px ;
+}
+/*carticles end*/
+
+/*divide start*/
+.divide{
+    width: 1px;
+    
+    background-color: rgba(78,78,78,.1);
+    margin: 0;
+
+ 
+}
+.divide-horizon{
+    display: none; 
+}
+/*divide end*/
+
+
+/*side start*/
+.side{
+    width: 25%;
+    margin: 0; 
+    padding-left: 30px;
+    padding-top: 20px;
+    
+    
 }
 
+.side h5{
+    font-size: 12pt;
+    color: #383838;
+}
+
+.side ul{
+    margin-top: 10px;
+    display: inline-block;
+   
+}
+
+.side li{
+    margin-left: 3px;
+    margin-top: 15px;
+    padding: 5px 10px;
+    background-color: rgba(78,78,78,.1);
+    border-radius: 50px;
+    display: inline-block;
+    font-size: 10pt;
+}
+
+.side li:hover{
+    background-color: rgba(78,78,78,.2);
+}
+.side a{
+    text-decoration: none;
+    color: #383838;
+}
+
+.topics{
+    margin: 0;
+    width: 25vw;
+}
+/*side end*/
 
 /* categories start */
 .categories{
-    margin-top: 80px; 
-    width: 80vw;
-   
+    margin-top: 20px; 
+    width: 70%;
+    
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
 }
 .categories .type{
     display: flex;
+    width: 45vw;
     justify-content: center;
     align-items: center;
-}
+    margin: auto;
+
+}/*change the position of type here*/
 
 .categories ul{
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 64vw;
     height: 60px;
     border-radius: 50px;
     border: 1px solid rgba(78,78,78, 0.3);
@@ -29,7 +110,7 @@ main{
     display: flex;
     justify-content: center;
     align-items: center; 
-    padding: 20px 10px;
+    padding: 10px 10px;
     height: 80px;
 }
 
@@ -39,7 +120,17 @@ main{
 }
 
 .categories #articles-container{
-    height:80vh;
+  
+    
+    top: 60px;
+    left: 0;
+}
+
+.categories .articles-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .categories .articles{
@@ -50,22 +141,34 @@ main{
 }
 
 .categories .articles div{
-    width: 60vw;
+    width:50vw;
     height: 80px;
     margin-top: 20px;
     padding: 20px;
-    border: 1px solid rgba(78,78,78,.3);
+    border: 1px solid rgba(44, 16, 16, 0.3);
     border-radius: 15px;
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+.categories .part-of-articles{
+    position: relative;
+    bottom: 10px;
+    margin: 0;
+}
+.categories .part-of-articles p{
+display: -webkit-box;
+-webkit-box-orient: vertical;
+-webkit-line-clamp: 1;
+line-clamp: 1;
+overflow: hidden;
 }
 
 .categories .type a{
     font-size: 12pt;  
     white-space: nowrap; 
     border-radius: 30px;
-    padding: 10px 20px;
+    padding: 10px 15px;
 }
 
 .categories .type a.active {
@@ -82,9 +185,14 @@ main{
 
 .categories h2 a{
     font-weight: 800;
-    margin: 10px 0;
+    margin: 10px 0 0 0;
     font-size: 13pt;
     letter-spacing: 0;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    overflow: hidden;
 }
 
 .categories p a{
@@ -98,43 +206,82 @@ main{
     display: none;
 }
 
+.categories .articles-info{
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+
+}
+
+.categories .articles-info img{
+    position: absolute;
+    left: 2px;
+}
+
+.categories .articles-info p{
+    font-size: 10pt;
+    color: #383838;
+    position: absolute;
+    left: 25px;
+    text-align: left;
+   
+}
 /* categories end */
+
+
+
 
 
 /* rwd start */
 @media screen and (max-width:1366px){
-
-    main{
-        height: 1750px;
+    .typeweb{
+        
+        flex-direction: column;
+        margin-top: 60px;
     }
-    /*  沒有這個footer會蓋住main why?? */
+   
+
+    .carticles {
+        width: 90%;
+        
+        margin: auto;
+    }
+
+
+    
 
     /* categories start */
+
+    .categories{
+        width: 90%;
+        
+        margin-left: 5%;
+    }
+ 
     .categories ul{
         display: none;
     }
     .categories .type{
         justify-content: left;
-        padding-left: 20px;
+        
     }
     .categories .articles{
-        margin-top: 0;
+        margin-top: 10px;
+      
     }
+    
+   
     
 
-    .categories .articles div {
-        padding: 15px;
-        margin: 15px 0 0;
-        height: 150px;
-    }
     
     .select-container{
-        
+
         display: flex;
         justify-content: center;
-        position: relative;
         min-width: 250px;
         height: 50px;
+
+        
     }
 
     .select-container .select-box{
@@ -143,52 +290,78 @@ main{
         border-radius: 15px;
         padding: 0 30px 0 30px;
         border:2px solid #fbaf59;
-        width: 85%;
+        width: 100%;
         color: #4e4e4e;
-        font-size: 15pt;
-        
+        font-size: 12pt;
+        font-weight: 700;
     }
 
 
     .select-container p{
         pointer-events: none;
-        font-size: 12pt;
+        font-size: 10pt;
         width: 50px;
-        height: 100%;
         position: absolute;
-        right: 30px;
-        transform: rotate(180deg);
+        right: 110px;
+        top: 117px;
         border-radius: 15px;
-        color: #4e4e4e;
+        color: #7e7d7d;
         display: flex;
         justify-content: center;
         align-items: center;
-    }
+    } /*調整三角形位置*/
+
+    
+
 
    
     /* categories end */
 
 
     /* articles start */
-    .articles div{
-        height: 360px;
-        
-    }
     
+    .categories .articles div {
+        width: 80%;
+    }
     
 
 
-    .articles div p{
-        margin: 0;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 4;
-        line-clamp: 4;
-        overflow: hidden;
-    }
+    
 
     /* articles end */
+    /*divide start */
+    .divide{
+        display: none;
+    }
+    .divide-horizon{
+        display: block;
+        height: 1px;
+        width: 80%;
+        background-color: rgba(78,78,78,.1);
+        background-color: rgba(34, 120, 60, 0.1);
+        margin-top: 50px;
+    }
+    /*divide end*/
+    /*side start*/
+    .side{
+        
+        width: 80vw;
+        display: flex;
+        margin: auto;
+        
+        
+    }
+    .side .topics{
+        margin: auto;
+        width: 100%;
     
+    }
+    
+    /*side end*/
+
+    /*footer start*/
+    
+    /*footer end*/
 } 
 
 
