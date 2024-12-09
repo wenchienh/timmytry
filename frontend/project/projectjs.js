@@ -9,7 +9,7 @@ function fetchAndShowArticles(category) {
     articlesSection.innerHTML = '載入中...';
 
     // 發送請求到後端獲取對應分類文章
-    fetch(`https://your-backend-url.com/articles?category=${category}`)
+    fetch(`https://timmytry.onrender.com/articles?category=${category}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('無法獲取文章數據');
@@ -54,7 +54,7 @@ document.getElementById('submit').addEventListener('click', (event) => {
     resultSection.innerHTML = '分析中...';
 
     // 發送 POST 請求到後端 API
-    fetch('https://your-backend-url.com/predict', {
+    fetch('https://timmytry.onrender.com/predict', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
