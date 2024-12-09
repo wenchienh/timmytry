@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="project.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <input type="checkbox" id="menu-control">
+    <header>
+        <h1><a href="">消假思聽</a></h1>
+        <label for="menu-control" class="menu-btn">&#9776;</label>
+        <ul>
+            <li><a href="homepage.html">辨識假消息</a></li>
+            <li><a href="type.html">類別</a></li>
+            <li><a href="dataanal.html">資料統計</a></li>
+            <li><a href="aboutus.html">關於我們</a></li>
+            <li class="active"><a href="comment.html">意見回饋</a></li>
+        </ul>
+        
+    </header>
+
+
+    
+    <main>
+        <div class="banner">        
+        </div>
+
+        <div class="start">
+            <div class="st-text">
+                <h3>Let's start.</h3>
+            <h2>開始使用</h2>
+            </div>
+            <div class="st-circle"></div>
+            <a href="javascript:void(0);" onclick="smoothScroll('#detect');"></a>
+        </div>
+
+        <section class="detect" id="detect">
+            <form action="">
+                <textarea type="fakeinput" placeholder="請輸入有疑慮的假消息" id="inputtext"></textarea>
+                <div class="button">
+                    <button type="submit"><img src="image/search.png" alt="" width="20px" height="20px"></button>
+                    <button type="reset"><img src="image/bin.png" alt="" width="20px" height="20px"></button>
+                </div>
+            </form>
+        </section>
+
+        <section class="trend">
+            <div class="trend-intro">
+                <h3>News and Updates</h3>
+                <h2>看看大家都在查詢的假新聞</h2>
+            </div>
+            <div class="trend-fakenews">
+                <div class="news">
+                    <a href="" class="article">
+                        <h4>翁翁老師與他的小蜜蜂們</h4>
+                        <p>某國立科技大學傳出有一個優秀的大三團隊正在致力研發一款產品，可以有效偵測假消息，假消息是甚麼呢？我也不知道。不如去問問翁翁吧！移動中，到達！叩叩！老師您好，請問您現在有空嗎，老師說：你這樣自數夠了嗎，不夠我再多說幾個字，還是不夠嗎？看來要拿出</p>
+                    </a>
+                    <div class="tag">
+                        <ul>
+                            <li># <a href="">有趣</a></li>
+                            <li># <a href="">蜜蜂</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="news">
+                    <a href="" class="article">
+                        <h4>名人啟示錄</h4>
+                        <p>從前從前有一個人叫小賈斯汀，他跟蕭甲斯汀說：哈囉！早安，今天天氣真好，你打算去哪？蕭甲斯汀：關你什麼事？小賈斯汀：嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚</p>
+                    </a>
+                    <div class="tag">
+                        <ul>
+                            <li># <a href="">天氣</a></li>
+                            <li># <a href="">心情</a></li>
+                            <li># <a href="">雙胞胎</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="news">
+                    <a href="" class="article">
+                        <h4>河伯威竟然是</h4>
+                        <p>甲假賈鉀岬鉀胛榎徦甲假賈鉀岬鉀胛榎徦甲假賈鉀岬鉀胛榎徦甲假賈鉀岬鉀胛榎徦。真的假的？當然是真的阿！你還不知道嗎，來讓我們在現場採訪這位先生，您好，請問你認識和柏崴嗎？我就是請說，您喜歡男生嗎，事的我喜歡。好的。</p>
+                    </a>
+                    <div class="tag">
+                        <ul>
+                            <li># <a href="">性向</a></li>
+                            <li># <a href="">同學</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="news">
+                    <a href="" class="article">
+                        <h4>涼老師</h4>
+                        <p>陳老師王老師林老師黃老師宋老師張老師夏老師胡老師說這個世界有那麼性嗎，有的！當然是有的，其中最佛的老師事梁老師，她總是以教學熱忱溫暖我們，那場燭光午餐是我大學時期難得的保貴記憶，再帶我們看風景的過程中，我漸漸地產生了情愫</p>
+                    </a>
+                    <div class="tag">
+                        <ul>
+                            <li># <a href="">老師</a></li>
+                            <li># <a href="">教學品質</a></li>
+                        </ul>
+                    </div>
+                </div>
+            
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <ul>
+            <li><a href="">辨識假消息</a></li>
+            <li><a href="">類別</a></li>
+            <li><a href="">資料統計</a></li>
+            <li><a href="">關於我們</a></li>
+            <li><a href="">意見回饋</a></li>
+        </ul>
+        <div class="ftcon">
+            <div class="ft-info">
+                <img src="image/logo_工作區域 1.png" width="150px" height="60px" alt="">
+                <a href=""><img src="image/youtube.png" alt="" width="30px"></a>
+            </div>
+            <hr>
+            <form action="">
+                <p>歡迎訂閱消假思聽電子報，可收到更多關於我們的資訊喔！</p>
+                <div class="email">
+                    <input type="email" placeholder="請輸入您的Email" required>
+                    <button type="email-submit">提交</button>
+                </div>
+            </form>
+
+            <p>Copyright © 消假思聽 2024 All Rights Reserved.</p>
+        </div>
+        
+
+
+    </footer>
+
+    <script src="projectjs.js"></script>
+   
+
+
+
+
+    
+</body>
+</html>
