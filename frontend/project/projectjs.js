@@ -1,114 +1,64 @@
-// 初始化：頁面載入時顯示默認分類文章
-window.onload = function () {
-    fetchAndShowArticles('health'); // 默認加載健康分類文章
-};
-
-// 動態顯示文章：根據選擇的分類從後端獲取文章數據
-function fetchAndShowArticles(category) {
-    const articlesSection = document.getElementById('articles');
-    articlesSection.innerHTML = '載入中...';
-
-    // 發送請求到後端獲取對應分類文章
-    fetch(`https://timmytry.onrender.com/articles?category=${category}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('無法獲取文章數據');
-            }
-            return response.json();
-        })
-        .then(data => {
-            articlesSection.innerHTML = ''; // 清空之前的內容
-
-            if (data.length > 0) {
-                data.forEach(article => {
-                    const articleDiv = document.createElement('div');
-                    articleDiv.classList.add('article');
-                    articleDiv.innerHTML = `
-                        <h2>${article.title}</h2>
-                        <p>${article.content}</p>
-                    `;
-                    articlesSection.appendChild(articleDiv);
-                });
-            } else {
-                articlesSection.innerHTML = `<p>目前沒有此分類的文章。</p>`;
-            }
-        })
-        .catch(error => {
-            console.error('錯誤:', error);
-            articlesSection.innerHTML = `<p>無法加載文章，請稍後再試。</p>`;
-        });
-}
-
-// 處理用戶輸入，將文字提交到後端 API
-document.getElementById('submit').addEventListener('click', (event) => {
-    event.preventDefault(); // 防止表單提交刷新頁面
-
+// 初始化：監聽提交按鈕點擊事件
+document.getElementById('submit-btn').addEventListener('click', async function () {
+    // 獲取用戶輸入的文字
     const inputText = document.getElementById('inputtext').value.trim();
-    const resultSection = document.getElementById('result');
 
+    // 驗證用戶是否輸入內容
     if (!inputText) {
-        resultSection.innerHTML = `<p>請輸入一些文字！</p>`;
+        alert('請輸入有疑慮的假消息！');
         return;
     }
 
-    resultSection.innerHTML = '分析中...';
+    // 顯示處理中的提示（可選）
+    console.log('正在處理用戶輸入...');
 
-    // 發送 POST 請求到後端 API
-    fetch('https://timmytry.onrender.com/predict', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text: inputText }),
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('API 請求失敗');
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.error) {
-                resultSection.innerHTML = `<p>錯誤：${data.error}</p>`;
-            } else {
-                // 顯示分析結果
-                resultSection.innerHTML = `<p>預測結果：${data.result}</p>`;
-            }
-        })
-        .catch(error => {
-            console.error('錯誤:', error);
-            resultSection.innerHTML = `<p>分析失敗，請稍後再試。</p>`;
+    try {
+        // 向後端發送請求
+        const response = await fetch('https://timmytry.onrender.com/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', // 指定請求類型為 JSON
+            },
+            body: JSON.stringify({ question: inputText }), // 傳遞用戶輸入數據
         });
+
+        // 解析後端返回的 JSON 數據
+        const data = await response.json();
+
+        // 處理後端返回的結果
+        if (data.error) {
+            alert(`錯誤：${data.error}`);
+        } else {
+            console.log('後端返回的結果:', data.result);
+
+            // 動態更新結果到頁面
+            updateResult(data.result.prediction);
+        }
+    } catch (error) {
+        console.error('請求失敗:', error);
+        alert('無法處理請求，請稍後再試。');
+    }
 });
 
-// 在 outcome.html 顯示之前的分析結果
-if (window.location.pathname.includes('outcome.html')) {
-    const previousResult = localStorage.getItem('predictionResult');
-    const resultElement = document.getElementById('percentage-num');
+// 更新分析結果到頁面
+function updateResult(prediction) {
+    const resultSection = document.getElementById('result');
+    const resultText = document.getElementById('result-text');
 
-    if (previousResult) {
-        resultElement.innerText = previousResult;
-    } else {
-        resultElement.innerText = '沒有可用的分析結果。';
-    }
+    // 更新結果文字
+    resultText.textContent = `分析結果：${prediction}`;
+
+    // 確保結果區域可見
+    resultSection.style.display = 'block';
 }
 
-// 點擊次數計數功能
-function incrementViewCount(counterId, articleId) {
-    let currentCount = parseInt(localStorage.getItem(articleId)) || 0;
-    currentCount++;
-    localStorage.setItem(articleId, currentCount);
-    document.getElementById(counterId).innerText = currentCount;
-}
-
-// Smooth Scroll 功能
+// 平滑滾動功能
 function smoothScroll(target) {
-    const headerHeight = document.querySelector('header').offsetHeight;
     const element = document.querySelector(target);
-    const offsetPosition = element.offsetTop - headerHeight;
+    element.scrollIntoView({ behavior: 'smooth' });
+}
 
-    window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth',
-    });
+// 開啟新窗口（目前不必要，預留用作其他功能）
+function openNewWindow() {
+    console.log("此功能未實現，僅為佔位。");
 }
