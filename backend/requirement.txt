@@ -5,3 +5,4 @@ jieba==0.42.1
 flask 
 torch 
 transformers
+flask-cors
