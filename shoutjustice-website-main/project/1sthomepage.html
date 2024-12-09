@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>document</title>
+    <link rel="stylesheet" href="project.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap" rel="stylesheet">
+    </head>
+  <body>
+
+    
+    <input type="checkbox" name="" id="menu-control">
+    <div class="header">
+        <h1><a href="project-homepage.html" #="">消假思聽</a></h1>
+        
+          <label for="menu-control" class="menu-btn">
+            <span>menu</span>
+          </label>
+        <nav>
+          <a href="project-homepage.html" #="">查證假消息</a>
+          <a href="type.html" #="">類別</a>
+          <a href="dataanal.html" #="">資料統計</a>
+          <a href="aboutus.html" #="">關於我們</a>    
+          <div class="line"></div>   
+          <ul class="navbar-nav">
+            <li class="dropdown">
+              <a class="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                使用對象
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">普通</a></li>
+                <li><a class="dropdown-item" href="#">年長者友善</a></li>
+              </ul>
+            </li>
+          </ul>   
+        </nav>
+        
+        
+    </div>
+    
+
+    <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
+      
+      <div class="carousel-inner w-100">
+        <div class="carousel-item active">
+          <img src="網頁照片/封面_工作區域 1.jpg" class="d-block w-100 img-fluid" alt="..." >
+        </div>
+        
+        <div class="carousel-item">
+          <img src="網頁照片/封面-02.jpg" class="d-block w-100 img-fluid" alt="..." >
+        </div>
+        <div class="carousel-item">
+          <img src="網頁照片/封面-03.jpg" class="d-block w-100 img-fluid" alt="...">
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+
+    
+    <aside class="update col-2">
+      <h1>版本更新</h1>
+      <li class="updaterecord">
+        <a class="upre" href="#">v24.0.3 (於2024/05/10更新)</a>
+      </li>
+      <li class="updaterecord">
+        <a class="upre" href="#">v24.0.2 (於2024/05/09更新)</a>
+      </li>
+      <li class="updaterecord">
+        <a class="upre" href="#">v24.0.1 (於2024/05/08更新)</a>
+      </li>
+    </aside>
+    
+
+
+      <div class="container">
+          <div class="row">
+            <div class="paragraph  mx-auto" id="search">
+              <h1>查證假消息</h1>
+                <form action="">
+                    <div class="input-group" id="fake">
+                        <div class="col-3">
+                            <select class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
+                                <option selected>選擇您想找尋的假消息型態</option>
+                                <option value="1">文字</option>
+                                <option value="2">網址</option>
+                            </select>
+                        </div>
+                        <!-- 使用<textarea>元素來支援多行文字輸入 -->
+                        <textarea class="form-control" placeholder="請輸入有疑慮的假消息⋯" aria-label="輸入假消息" id="inputtext"></textarea>
+                        <button class="btn btn-outline-secondary" type="button">查詢</button>
+                        <button class="btn btn-outline-secondary" type="button" onclick="cleanstring()">清除</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="paragraph" id="trend">
+          <div class="col-12 mx-auto">
+            <h1>大家都在找⋯</h1>
+            <div class="trend">
+              <div class="post col-12">
+                
+                  <div class="card mb-3">
+                    
+                    <div class="card-body-t">
+                      
+                      <div class="sign t1">
+                        <p>1</p>
+                      </div>
+                      
+                      <div class="text">
+                        <h5 class="card-title">翁翁老師與他的小蜜蜂們</h5>
+                      <p class="card-text">某國立科技大學傳出有一個優秀的大三團隊正在致力研發一款產品，可以有效偵測假消息，假消息是甚麼呢？我也不知道。不如去問問翁翁吧！移動中，到達！叩叩！老師您好，請問您現在有空嗎，老師說：你這樣自數夠了嗎，不夠我再多說幾個字</p>
+                      </div>
+                      <a href="#" class="btn btn-primary">Learn more</a>
+                    </div>
+                  </div>
+                
+                
+                <div class="card mb-3">
+                  <div class="card-body-t">
+                    <div class="sign t2">
+                      <p>2</p>
+                    </div>
+                    <div class="text">
+                      <h5 class="card-title">名人啟示錄</h5>
+                    <p class="card-text">從前從前有一個人叫小賈斯汀，他跟蕭甲斯汀說：哈囉！早安，今天天氣真好，你打算去哪？蕭甲斯汀：關你什麼事？小賈斯汀：嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚嗚</p>
+                    </div>
+                    <a href="#" class="btn btn-primary">Learn more</a>
+                  </div>
+                </div>
+                <div class="card  mb-3">
+                  <div class="card-body-t">
+                    <div class="sign t3">
+                      <p>3</p>
+                    </div>
+                    <div class="text">
+                      <h5 class="card-title">河伯威竟然是</h5>
+                    <p class="card-text">甲假賈鉀岬鉀胛榎徦甲假賈鉀岬鉀胛榎徦甲假賈鉀岬鉀胛榎徦甲假賈鉀岬鉀胛榎徦。真的假的？當然是真的阿！你還不知道嗎，來讓我們在現場採訪這位先生，您好，請問你認識和柏崴嗎？我就是請說，您喜歡男生嗎，事的我喜歡。好的。</p>
+                    </div>
+                    <a href="#" class="btn btn-primary">Learn more</a>
+                  </div>
+                </div>
+                <div class="card mb-3">
+                  <div class="card-body-t">
+                    <div class="sign t4">
+                      <p>4</p>
+                    </div>
+                    <div class="text">
+                      <h5 class="card-title">涼老師</h5>
+                    <p class="card-text">陳老師王老師林老師黃老師宋老師張老師夏老師胡老師說這個世界有那麼性嗎，有的！當然是有的，其中最佛的老師事梁老師，她總是以教學熱忱溫暖我們，那場燭光午餐是我大學時期難得的保貴記憶，再帶我們看風景的過程中，我漸漸地產生了情愫</p>
+                    </div>
+                    <a href="#" class="btn btn-primary">Learn more</a>
+                  </div>
+                </div>
+                
+              </div>
+              
+              <!-- <div class="trend-btn col-3">
+                <a href="#" class="readmore-btn">→</a>             
+              </div> -->
+            </div>
+            
+          </div>
+        </div>
+
+        
+
+        
+
+
+    </div>
+    
+    <div class="footer">
+      <div class="container">
+        
+      </div>
+
+
+      
+    </div>
+
+    <button type="button" class="btn btn-danger btn-floating btn-lg" id="btt">
+      <i class="fas fa-arrow-up">↑</i>
+    </button>
+
+
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+      <script src="js/jquery.min.js"></script>
+      <script>
+        document.getElementById("search");
+        function cleanstring(){
+          document.getElementById("inputtext").value="";
+        }
+
+        let mybutton = document.getElementById("btt");
+          window.onscroll = function () {
+            scrollFunction();
+          };
+
+          function scrollFunction() {
+            if (
+              document.body.scrollTop > 20 ||
+              document.documentElement.scrollTop > 20
+            ) {
+              mybutton.style.display = "block";
+            } else {
+              mybutton.style.display = "none";
+            }
+          }
+          // When the user clicks on the button, scroll to the top of the document
+          mybutton.addEventListener("click", backToTop);
+
+          function backToTop() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+          }
+      </script>
+     
+
+      
+
+
+     
+
+     
+
+
+      <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>     -->
+  </body>
+  
+</html>
+
+
+
+<!--  手機 直   .col-佔欄數
+      手機 橫   .col-sm-佔欄數
+      平板 直   .col-md-佔欄數
+      平板 橫   .col-lg-佔欄數
+      桌機      .col-xl-佔欄數 -->
