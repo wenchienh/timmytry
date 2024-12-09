@@ -31,8 +31,16 @@ def run_model(input_text):
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
+        # 打印請求頭和數據，檢查 Content-Type 和請求體
+        print("Request Headers:", request.headers)
+        print("Request Data:", request.data)
+
+        # 確保 Content-Type 是 application/json
+        if not request.is_json:
+            return jsonify({'error': '請求的 Content-Type 應為 application/json'}), 415
+
         # 接收前端傳來的 JSON 數據
-        data = request.json
+        data = request.get_json()
         user_input = data.get('question', '')  # 提取用戶輸入的問題
 
         if not user_input:
@@ -46,6 +54,7 @@ def predict():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 # 啟動 Flask 應用
 if __name__ == '__main__':
