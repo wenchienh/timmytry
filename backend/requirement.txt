@@ -6,5 +6,5 @@ flask
 torch 
 transformers
 flask-cors
-pymysql
+mysql-connector-python
 
