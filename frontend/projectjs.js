@@ -19,7 +19,7 @@ document.getElementById('submit-btn').addEventListener('click', async function (
             headers: {
                 'Content-Type': 'application/json', // 指定請求類型為 JSON
             },
-            body: JSON.stringify({ question: inputText }), // 傳遞用戶輸入數據
+            body: JSON.stringify({ title: inputText }), // 傳遞用戶輸入數據
         });
 
         // 解析後端返回的 JSON 數據
@@ -29,10 +29,10 @@ document.getElementById('submit-btn').addEventListener('click', async function (
         if (data.error) {
             alert(`錯誤：${data.error}`);
         } else {
-            console.log('後端返回的結果:', data.result);
+            console.log('後端返回的結果:', data.category);
 
             // 動態更新結果到頁面
-            updateResult(data.result.prediction);
+            updateResult(data.category);
         }
     } catch (error) {
         console.error('請求失敗:', error);
@@ -41,12 +41,12 @@ document.getElementById('submit-btn').addEventListener('click', async function (
 });
 
 // 更新分析結果到頁面
-function updateResult(prediction) {
+function updateResult(category) {
     const resultSection = document.getElementById('result');
     const resultText = document.getElementById('result-text');
 
     // 更新結果文字
-    resultText.textContent = `分析結果：${prediction}`;
+    resultText.textContent = `分析結果：${category}`;
 
     // 確保結果區域可見
     resultSection.style.display = 'block';
