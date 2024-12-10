@@ -42,7 +42,7 @@ tokenizer.index_word = {index: word for word, index in word_index.items()}
 def get_database_connection():
     try:
         connection = mysql.connector.connect(**DB_CONFIG)
-         print("Database connection established!")  # 測試連接
+        print("Database connection established!")  # 測試連接
         return connection
     except mysql.connector.Error as err:
         print(f"Error: {err}")
