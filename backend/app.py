@@ -19,13 +19,24 @@ MAX_SEQUENCE_LENGTH = 20
 MODEL_PATH = os.getenv("MODEL_PATH", "FNCwithLSTM.h5")
 WORD_INDEX_PATH = os.getenv("WORD_INDEX_PATH", "word_index.json")
 
-# 資料庫連接配置
+# 資料庫連接配置（更新為你的 Render 資料庫信息）
 DB_CONFIG = {
-    "host": "127.0.0.1",  # 資料庫地址
-    "user": "root",  # 資料庫用戶名
-    "password": "0423",  # 資料庫密碼
-    "database": "fake_news_db"  # 資料庫名稱
+    "host": os.getenv("DB_HOST", "try1-442910:asia-east1:fakenews"),  # 資料庫地址
+    "user": os.getenv("DB_USER", "tps"),  # 資料庫用戶名
+    "password": os.getenv("DB_PASSWORD", "0423"),  # 資料庫密碼
+    "database": os.getenv("DB_NAME", "fake_news_db")  # 資料庫名稱
 }
+
+# 加載已訓練的模型
+model = kr.models.load_model(MODEL_PATH)
+
+# 加載 word_index.json 並還原 Tokenizer
+with open(WORD_INDEX_PATH, 'r') as f:
+    word_index = json.load(f)
+
+tokenizer = tf.keras.preprocessing.text.Tokenizer()
+tokenizer.word_index = word_index
+tokenizer.index_word = {index: word for word, index in word_index.items()}
 
 # 建立資料庫連接
 def get_database_connection():
@@ -65,7 +76,7 @@ def get_closest_match_from_database(input_title):
     # SQL 查詢（可以根據實際需求優化）
     query = """
     SELECT id, title, content, classification
-    FROM your_table_name
+    FROM cleaned_file
     WHERE title LIKE %s
     LIMIT 1
     """
