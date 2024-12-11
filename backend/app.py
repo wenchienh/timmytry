@@ -29,7 +29,6 @@ DB_CONFIG = {
     "user": os.getenv("DB_USER", "tps"),             # 替换为你的数据库用户名
     "password": os.getenv("DB_PASSWORD", "0423"),    # 替换为你的数据库密码
     "database": os.getenv("DB_NAME", "fake_news_db"),# 替换为你的数据库名称
-    "port": int(os.getenv("DB_PORT", 3306))          # 数据库端口，默认为3306
 }
 
 # 加载已训练的模型
