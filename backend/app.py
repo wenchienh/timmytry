@@ -90,26 +90,21 @@ def get_closest_match_from_database(input_title):
     if connection is None:
         return None
 
-    try:
-        cursor = connection.cursor(dictionary=True)
-        # 使用全文搜索匹配，需要在 title 字段上创建 FULLTEXT 索引
-        query = """
-        SELECT id, title, content, classification
-        FROM cleaned_file
-        WHERE MATCH(title) AGAINST(%s IN NATURAL LANGUAGE MODE)
-        LIMIT 1
-        """
-        logging.info(f"执行 SQL 查询：{query}，参数：{input_title}")
-        cursor.execute(query, (input_title,))
-        result = cursor.fetchone()
-        logging.info(f"查询结果：{result}")
-        return result
-    except mysql.connector.Error as e:
-        logging.error(f"数据库查询错误：{e}")
-        return None
-    finally:
-        cursor.close()
-        connection.close()
+    cursor = connection.cursor(dictionary=True)
+    # SQL 查询逻辑更新为使用模糊匹配
+    query = """
+    SELECT id, title, content, classification
+    FROM cleaned_file
+    WHERE title LIKE %s
+    LIMIT 1
+    """
+    # 模糊匹配标题
+    cursor.execute(query, (f"%{input_title}%",))
+    result = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    return result
+
 
 # API 路由
 @app.route('/predict', methods=['POST'])
