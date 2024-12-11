@@ -83,7 +83,7 @@ def get_closest_match_from_database(input_title):
     cursor = connection.cursor(dictionary=True)
     query = """
     SELECT id, title, content, classification
-    FROM your_table_name
+    FROM cleaned_file
     WHERE title LIKE %s
     LIMIT 1
     """
