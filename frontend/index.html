@@ -22,18 +22,15 @@
             <li><a href="aboutus.html">關於我們</a></li>
             <li><a href="comment.html">意見回饋</a></li>
         </ul>
-        
     </header>
 
-
-    
     <main>
+        <!-- Loading 動畫區域 -->
         <div id="loading" style="display: none;">
             <div class="spinner"></div>
         </div>
 
-        <div class="banner">        
-        </div>
+        <div class="banner"></div>
 
         <div class="start">
             <div class="st-text">
@@ -48,16 +45,21 @@
             <form id="detect-form">
                 <textarea placeholder="請輸入有疑慮的假消息" id="inputtext"></textarea>
                 <div class="button">
-                    <button type="button" id="submit-btn"><img src="image/search.png" alt="" width="20px" height="20px"></button>
-                    <button type="reset"><img src="image/bin.png" alt="" width="20px" height="20px"></button>
+                    <button type="button" id="submit-btn">
+                        <img src="image/search.png" alt="" width="20px" height="20px">
+                    </button>
+                    <button type="reset">
+                        <img src="image/bin.png" alt="" width="20px" height="20px">
+                    </button>
                 </div>
             </form>
-            
         </section>
 
+        <!-- 結果區域 -->
         <section class="result" id="result" style="display: none;">
             <h3>分析結果</h3>
             <p id="result-text"></p>
+            <p id="result-timestamp" class="timestamp"></p> <!-- 顯示查詢時間 -->
         </section>
 
         <section class="trend">
@@ -66,7 +68,7 @@
                 <h2>看看大家都在查詢的假新聞</h2>
             </div>
             <div class="trend-fakenews">
-                <div class="news">
+                 <div class="news">
                     <a href="" class="article">
                         <h4>健康風暴！知名製藥公司被爆造假藥品</h4>
                         <p>驚人的揭露！某知名製藥公司被揭發生產的藥品存在嚴重的品質問題。據報導，這些藥品中含有不合格成分，對患者的健康構成了嚴重威脅。此次爆料引發了對製藥行業監管的關注，並對該公司聲譽造成了沉重打擊。患者和醫療專家們紛紛呼籲加強對藥品品質的監管和檢測。</p>
@@ -115,10 +117,9 @@
                         </ul>
                     </div>
                 </div>
-            
+                <!-- 範例假新聞 -->
             </div>
         </section>
-
     </main>
 
     <footer>
@@ -142,20 +143,10 @@
                     <button type="email-submit">提交</button>
                 </div>
             </form>
-
             <p>Copyright © 消假思聽 2024 All Rights Reserved.</p>
         </div>
-        
-
-
     </footer>
 
     <script src="projectjs.js"></script>
-   
-
-
-
-
-    
 </body>
 </html>
