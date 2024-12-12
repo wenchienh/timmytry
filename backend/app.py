@@ -111,7 +111,8 @@ def predict_category(input_title, database_title):
     predictions = model.predict([input_processed, db_processed])
     if predictions.shape[0] == 0:
         raise ValueError("No predictions returned from the model.")
-    return np.argmax(predictions, axis=1)[0]
+    # 返回完整概率分布
+    return predictions[0]  # 返回一維數組 [P(fake), P(real), ...]
 
 # 从数据库查找与输入标题最相似的记录
 def get_closest_match_from_database(input_title):
@@ -148,21 +149,26 @@ def predict():
         if len(input_title) < 3:
             return jsonify({'error': 'Title is too short'}), 400
 
-        # 从数据库获取匹配的标题
+        # 從資料庫獲取匹配的標題
         matched_entry = get_closest_match_from_database(input_title)
         if not matched_entry:
             return jsonify({'error': 'No matching data found in the database'}), 404
 
         db_title = matched_entry["title"]
 
-        # 使用模型进行预测
-        category_index = predict_category(input_title, db_title)
+        # 使用模型進行預測
+        probabilities = predict_category(input_title, db_title)
+        category_index = np.argmax(probabilities)
         category = "fake" if category_index == 1 else "real"
 
         response = {
             'input_title': input_title,
             'matched_title': db_title,
             'category': category,
+            'probabilities': {
+                'fake': float(probabilities[1]),
+                'real': float(probabilities[0])
+            },
             'database_entry': matched_entry  # 返回完整的数据库记录
         }
         logging.info(f"Response data: {response}")
