@@ -56,9 +56,9 @@ except Exception as e:
 try:
     with open(WORD_INDEX_PATH, 'r', encoding='utf-8') as f:
         word_index = json.load(f)
-    tokenizer = tf.keras.preprocessing.text.Tokenizer()
+    tokenizer = tf.keras.preprocessing.text.Tokenizer(num_words=10000)  # 限制最大詞彙數
     tokenizer.word_index = word_index
-    tokenizer.index_word = {index: word for word, index in word_index.items()}
+    tokenizer.index_word = {index: word for word, index in word_index.items() if index < 10000}
     logging.info("Tokenizer restored successfully.")
 except Exception as e:
     logging.error(f"Error loading tokenizer: {e}")
@@ -74,8 +74,11 @@ def preprocess_texts(title):
     if tokenizer is None:
         raise ValueError("Tokenizer is not initialized.")
     title_tokenized = jieba_tokenizer(title)
-    x_test = tokenizer.texts_to_sequences([title_tokenized])
-    x_test = kr.preprocessing.sequence.pad_sequences(x_test, maxlen=MAX_SEQUENCE_LENGTH)
+    sequences = tokenizer.texts_to_sequences([title_tokenized])
+    # 限制索引值範圍，防止超過 MAX_NUM_WORDS
+    sequences = [[idx if idx < 10000 else 0 for idx in seq] for seq in sequences]
+    x_test = kr.preprocessing.sequence.pad_sequences(sequences, maxlen=MAX_SEQUENCE_LENGTH)
+    logging.debug(f"Preprocessed sequences: {sequences}")
     return x_test
 
 # 模型预测
@@ -162,8 +165,8 @@ def predict():
             'similarity': best_similarity,
             'category': category,
             'probabilities': {
-                'fake': float(probabilities[1]),
-                'real': float(probabilities[0])
+                'fake': float(probabilities[0][1]),
+                'real': float(probabilities[0][0])
             },
             'database_entry': best_match
         }
