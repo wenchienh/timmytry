@@ -7,4 +7,5 @@ torch
 transformers
 flask-cors
 mysql-connector-python
-
+scikit-learn
+gunicorn
