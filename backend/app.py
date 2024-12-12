@@ -7,7 +7,8 @@ import jieba.posseg as pseg
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import mysql.connector
-from mysql.connector import pooling
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 import logging
 
 # 初始化日志记录
@@ -19,6 +20,7 @@ CORS(app)
 
 # 全局参数
 MAX_SEQUENCE_LENGTH = 20
+SIMILARITY_THRESHOLD = 0.7  # 相似度閾值
 
 # 模型及数据的相对路径
 MODEL_PATH = os.getenv("MODEL_PATH", "FNCwithLSTM.h5")
@@ -33,16 +35,14 @@ DB_CONFIG = {
 }
 
 # 数据库连接池
-try:
-    db_pool = mysql.connector.pooling.MySQLConnectionPool(
-        pool_name="mypool",
-        pool_size=5,
-        **DB_CONFIG
-    )
-    logging.info("Database connection pool initialized.")
-except mysql.connector.Error as err:
-    logging.error(f"Database connection pool initialization error: {err}")
-    db_pool = None
+def get_database_connection():
+    try:
+        connection = mysql.connector.connect(**DB_CONFIG)
+        logging.info("Database connection established.")
+        return connection
+    except mysql.connector.Error as err:
+        logging.error(f"Database connection error: {err}")
+        return None
 
 # 加载已训练的模型
 try:
@@ -64,20 +64,6 @@ except Exception as e:
     logging.error(f"Error loading tokenizer: {e}")
     tokenizer = None
 
-# 建立数据库连接
-def get_database_connection():
-    try:
-        if db_pool:
-            connection = db_pool.get_connection()
-            logging.info("Database connection established.")
-            return connection
-        else:
-            logging.error("Database connection pool is not initialized.")
-            return None
-    except mysql.connector.Error as err:
-        logging.error(f"Database connection error: {err}")
-        return None
-
 # 分词函数
 def jieba_tokenizer(text):
     words = pseg.cut(text)
@@ -88,19 +74,9 @@ def preprocess_texts(title):
     if tokenizer is None:
         raise ValueError("Tokenizer is not initialized.")
     title_tokenized = jieba_tokenizer(title)
-    sequences = tokenizer.texts_to_sequences([title_tokenized])
-    
-    # 過濾超出 num_words 的索引
-    num_words = 10000  # 與模型中 Embedding 層的 input_dim 一致
-    filtered_sequences = [
-        [index for index in seq if index < num_words]
-        for seq in sequences
-    ]
-    print(f"Filtered sequences: {filtered_sequences}")  # 用於調試
-
-    x_test = kr.preprocessing.sequence.pad_sequences(filtered_sequences, maxlen=MAX_SEQUENCE_LENGTH)
+    x_test = tokenizer.texts_to_sequences([title_tokenized])
+    x_test = kr.preprocessing.sequence.pad_sequences(x_test, maxlen=MAX_SEQUENCE_LENGTH)
     return x_test
-
 
 # 模型预测
 def predict_category(input_title, database_title):
@@ -109,10 +85,18 @@ def predict_category(input_title, database_title):
     input_processed = preprocess_texts(input_title)
     db_processed = preprocess_texts(database_title)
     predictions = model.predict([input_processed, db_processed])
-    if predictions.shape[0] == 0:
-        raise ValueError("No predictions returned from the model.")
-    # 返回完整概率分布
-    return predictions[0]  # 返回一維數組 [P(fake), P(real), ...]
+    return predictions
+
+# 计算文本相似度
+def compute_similarity(input_title, db_title):
+    try:
+        vectorizer = TfidfVectorizer()
+        tfidf_matrix = vectorizer.fit_transform([input_title, db_title])
+        similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])
+        return similarity[0][0]  # 返回相似度分數
+    except Exception as e:
+        logging.error(f"Error in computing similarity: {e}")
+        return 0
 
 # 从数据库查找与输入标题最相似的记录
 def get_closest_match_from_database(input_title):
@@ -125,12 +109,11 @@ def get_closest_match_from_database(input_title):
         query = """
         SELECT id, title, content, classification
         FROM cleaned_file
-        WHERE title LIKE %s
-        LIMIT 1
+        LIMIT 100
         """
-        cursor.execute(query, (f"%{input_title}%",))
-        result = cursor.fetchone()
-        return result
+        cursor.execute(query)
+        results = cursor.fetchall()
+        return results
     finally:
         cursor.close()
         connection.close()
@@ -149,61 +132,41 @@ def predict():
         if len(input_title) < 3:
             return jsonify({'error': 'Title is too short'}), 400
 
-        # 從資料庫獲取匹配的標題
-        matched_entry = get_closest_match_from_database(input_title)
+        # 获取数据库中所有记录
+        database_entries = get_closest_match_from_database(input_title)
+        if not database_entries:
+            return jsonify({'error': 'No matching data found in the database'}), 404
 
-        if not matched_entry:
-            # 如果資料庫中無匹配結果，直接使用模型進行單獨預測
-            probabilities = model.predict(preprocess_texts(input_title))[0]
-            category_index = np.argmax(probabilities)
-            category = "fake" if category_index == 1 else "real"
-            response = {
-                'input_title': input_title,
-                'category': category,
-                'probabilities': {
-                    'fake': float(probabilities[1]),
-                    'real': float(probabilities[0])
-                },
-                'message': 'No matching data found in the database. The model predicted directly.'
-            }
-            logging.info(f"Response data: {response}")
-            return jsonify(response)
+        # 遍历所有数据库标题，计算与输入标题的相似度
+        best_match = None
+        best_similarity = 0
+        for entry in database_entries:
+            db_title = entry["title"]
+            similarity = compute_similarity(input_title, db_title)
+            if similarity > best_similarity:
+                best_similarity = similarity
+                best_match = entry
 
-        db_title = matched_entry["title"]
+        # 检查相似度是否超过閾值
+        if best_similarity < SIMILARITY_THRESHOLD:
+            return jsonify({'error': 'No sufficiently similar data found in the database', 'similarity': best_similarity}), 404
 
-        # 使用模型進行匹配預測
-        probabilities = predict_category(input_title, db_title)
+        # 使用模型进行预测
+        probabilities = predict_category(input_title, best_match["title"])
         category_index = np.argmax(probabilities)
         category = "fake" if category_index == 1 else "real"
 
-        # 判斷匹配結果的相關性
-        similarity_score = compute_similarity(input_title, db_title)
-        if similarity_score < 0.5:
-            response = {
-                'input_title': input_title,
-                'matched_title': db_title,
-                'category': category,
-                'similarity': similarity_score,
-                'message': 'Low similarity score. The match might not be relevant.',
-                'probabilities': {
-                    'fake': float(probabilities[1]),
-                    'real': float(probabilities[0])
-                },
-                'database_entry': matched_entry
-            }
-        else:
-            response = {
-                'input_title': input_title,
-                'matched_title': db_title,
-                'category': category,
-                'similarity': similarity_score,
-                'probabilities': {
-                    'fake': float(probabilities[1]),
-                    'real': float(probabilities[0])
-                },
-                'database_entry': matched_entry
-            }
-
+        response = {
+            'input_title': input_title,
+            'matched_title': best_match["title"],
+            'similarity': best_similarity,
+            'category': category,
+            'probabilities': {
+                'fake': float(probabilities[1]),
+                'real': float(probabilities[0])
+            },
+            'database_entry': best_match
+        }
         logging.info(f"Response data: {response}")
         return jsonify(response)
 
@@ -211,11 +174,5 @@ def predict():
         logging.error(f"Error occurred: {e}")
         return jsonify({'error': str(e)}), 500
 
-
 if __name__ == '__main__':
-    # 确保数据库连接池和模型已正确加载
-    if db_pool is None or model is None or tokenizer is None:
-        logging.error("Initialization failed. Exiting application.")
-        exit(1)
-
     app.run(host='0.0.0.0', port=5000, debug=False)
