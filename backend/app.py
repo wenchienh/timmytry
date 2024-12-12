@@ -151,32 +151,66 @@ def predict():
 
         # 從資料庫獲取匹配的標題
         matched_entry = get_closest_match_from_database(input_title)
+
         if not matched_entry:
-            return jsonify({'error': 'No matching data found in the database'}), 404
+            # 如果資料庫中無匹配結果，直接使用模型進行單獨預測
+            probabilities = model.predict(preprocess_texts(input_title))[0]
+            category_index = np.argmax(probabilities)
+            category = "fake" if category_index == 1 else "real"
+            response = {
+                'input_title': input_title,
+                'category': category,
+                'probabilities': {
+                    'fake': float(probabilities[1]),
+                    'real': float(probabilities[0])
+                },
+                'message': 'No matching data found in the database. The model predicted directly.'
+            }
+            logging.info(f"Response data: {response}")
+            return jsonify(response)
 
         db_title = matched_entry["title"]
 
-        # 使用模型進行預測
+        # 使用模型進行匹配預測
         probabilities = predict_category(input_title, db_title)
         category_index = np.argmax(probabilities)
         category = "fake" if category_index == 1 else "real"
 
-        response = {
-            'input_title': input_title,
-            'matched_title': db_title,
-            'category': category,
-            'probabilities': {
-                'fake': float(probabilities[1]),
-                'real': float(probabilities[0])
-            },
-            'database_entry': matched_entry  # 返回完整的数据库记录
-        }
+        # 判斷匹配結果的相關性
+        similarity_score = compute_similarity(input_title, db_title)
+        if similarity_score < 0.5:
+            response = {
+                'input_title': input_title,
+                'matched_title': db_title,
+                'category': category,
+                'similarity': similarity_score,
+                'message': 'Low similarity score. The match might not be relevant.',
+                'probabilities': {
+                    'fake': float(probabilities[1]),
+                    'real': float(probabilities[0])
+                },
+                'database_entry': matched_entry
+            }
+        else:
+            response = {
+                'input_title': input_title,
+                'matched_title': db_title,
+                'category': category,
+                'similarity': similarity_score,
+                'probabilities': {
+                    'fake': float(probabilities[1]),
+                    'real': float(probabilities[0])
+                },
+                'database_entry': matched_entry
+            }
+
         logging.info(f"Response data: {response}")
         return jsonify(response)
 
     except Exception as e:
         logging.error(f"Error occurred: {e}")
         return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     # 确保数据库连接池和模型已正确加载
