@@ -20,7 +20,7 @@ CORS(app)
 
 # 全局参数
 MAX_SEQUENCE_LENGTH = 20
-SIMILARITY_THRESHOLD = 0.7  # 相似度閾值
+SIMILARITY_THRESHOLD = 0.5  # 相似度閾值
 
 # 模型及数据的相对路径
 MODEL_PATH = os.getenv("MODEL_PATH", "FNCwithLSTM.h5")
