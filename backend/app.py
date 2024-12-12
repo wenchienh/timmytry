@@ -88,9 +88,19 @@ def preprocess_texts(title):
     if tokenizer is None:
         raise ValueError("Tokenizer is not initialized.")
     title_tokenized = jieba_tokenizer(title)
-    x_test = tokenizer.texts_to_sequences([title_tokenized])
-    x_test = kr.preprocessing.sequence.pad_sequences(x_test, maxlen=MAX_SEQUENCE_LENGTH)
+    sequences = tokenizer.texts_to_sequences([title_tokenized])
+    
+    # 過濾超出 num_words 的索引
+    num_words = 10000  # 與模型中 Embedding 層的 input_dim 一致
+    filtered_sequences = [
+        [index for index in seq if index < num_words]
+        for seq in sequences
+    ]
+    print(f"Filtered sequences: {filtered_sequences}")  # 用於調試
+
+    x_test = kr.preprocessing.sequence.pad_sequences(filtered_sequences, maxlen=MAX_SEQUENCE_LENGTH)
     return x_test
+
 
 # 模型预测
 def predict_category(input_title, database_title):
