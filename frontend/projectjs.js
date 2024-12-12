@@ -2,13 +2,15 @@
 document.getElementById('submit-btn').addEventListener('click', async function () {
     const inputText = document.getElementById('inputtext').value.trim();
 
+    // 驗證用戶是否輸入內容
     if (!inputText) {
         alert('請輸入有疑慮的假消息！');
         return;
     }
 
     // 顯示等待動畫
-    document.getElementById('loading').style.display = 'block';
+    const loadingIndicator = document.getElementById('loading');
+    loadingIndicator.style.display = 'block';
 
     try {
         // 向後端發送請求
@@ -20,45 +22,47 @@ document.getElementById('submit-btn').addEventListener('click', async function (
             body: JSON.stringify({ title: inputText }),
         });
 
+        // 解析後端返回的 JSON 數據
         const data = await response.json();
 
         // 隱藏等待動畫
-        document.getElementById('loading').style.display = 'none';
+        loadingIndicator.style.display = 'none';
 
         if (data.error) {
             alert(`錯誤：${data.error}`);
         } else {
-            const timestamp = new Date().toLocaleString(); // 當前時間
-            const resultContainer = document.getElementById('result-container');
-
-            // 清空舊結果（可選，根據需求保留歷史記錄則註釋掉此行）
-            resultContainer.innerHTML = '';
-
-            // 插入新結果
-            const resultHTML = `
-                <div class="result-item">
-                    <p><strong>結果時間：</strong>${timestamp}</p>
-                    <p><strong>查詢標題：</strong>${data.input_title}</p>
-                    <p><strong>匹配標題：</strong>${data.matched_title}</p>
-                    <p><strong>分類：</strong>${data.category}</p>
-                </div>
-            `;
-            resultContainer.innerHTML = resultHTML;
-
-            // 確保結果區域可見
-            document.getElementById('result').style.display = 'block';
-
-            // 新結果高亮顯示
-            const resultItem = document.querySelector('.result-item');
-            resultItem.classList.add('highlight');
-            setTimeout(() => resultItem.classList.remove('highlight'), 2000);
+            updateResult(data);
         }
     } catch (error) {
-        document.getElementById('loading').style.display = 'none';
+        // 隱藏等待動畫
+        loadingIndicator.style.display = 'none';
         console.error('請求失敗:', error);
         alert('無法處理請求，請稍後再試。');
     }
 });
+
+// 更新分析結果到頁面
+function updateResult(data) {
+    const resultSection = document.getElementById('result');
+    const resultText = document.getElementById('result-text');
+    const resultTimestamp = document.getElementById('result-timestamp');
+
+    // 更新結果文字
+    resultText.innerHTML = `
+        <strong>分析結果：</strong> ${data.category} <br>
+        <strong>假消息概率：</strong> ${(data.probabilities.fake * 100).toFixed(2)}% <br>
+        <strong>真消息概率：</strong> ${(data.probabilities.real * 100).toFixed(2)}% <br>
+        <strong>相關資料庫標題：</strong> ${data.matched_title} <br>
+        <strong>內容摘要：</strong> ${data.database_entry.content}
+    `;
+
+    // 更新時間戳
+    const currentTime = new Date().toLocaleString();
+    resultTimestamp.textContent = `查詢時間：${currentTime}`;
+
+    // 確保結果區域可見
+    resultSection.style.display = 'block';
+}
 
 // 平滑滾動功能
 function smoothScroll(target) {
@@ -70,3 +74,20 @@ function smoothScroll(target) {
 function openNewWindow() {
     console.log("此功能未實現，僅為佔位。");
 }
+
+// 重置結果區域的內容
+function resetResult() {
+    const resultSection = document.getElementById('result');
+    const resultText = document.getElementById('result-text');
+    const resultTimestamp = document.getElementById('result-timestamp');
+
+    // 清空結果區域內容
+    resultText.innerHTML = '';
+    resultTimestamp.textContent = '';
+
+    // 隱藏結果區域
+    resultSection.style.display = 'none';
+}
+
+// 監聽重置按鈕的點擊事件
+document.querySelector('button[type="reset"]').addEventListener('click', resetResult);
