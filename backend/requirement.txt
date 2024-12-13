@@ -9,3 +9,4 @@ flask-cors
 mysql-connector-python
 scikit-learn
 gunicorn
+rank_bm25
