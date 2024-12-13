@@ -10,7 +10,7 @@ import mysql.connector
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import logging
-
+import os
 
 # 初始化日志记录
 logging.basicConfig(level=logging.INFO)
