@@ -7,7 +7,6 @@ import jieba.posseg as pseg
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import mysql.connector
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import logging
 
@@ -20,7 +19,7 @@ CORS(app)
 
 # 全局参数
 MAX_SEQUENCE_LENGTH = 20
-SIMILARITY_THRESHOLD = 0.1  # 相似度閾值
+SIMILARITY_THRESHOLD = 0.5  # 相似度阈值
 
 # 模型及数据的相对路径
 MODEL_PATH = os.getenv("MODEL_PATH", "FNCwithLSTM.h5")
@@ -87,17 +86,6 @@ def predict_category(input_title, database_title):
     predictions = model.predict([input_processed, db_processed])
     return predictions
 
-# 计算文本相似度
-def compute_similarity(input_title, db_combined_text):
-    try:
-        vectorizer = TfidfVectorizer()
-        tfidf_matrix = vectorizer.fit_transform([input_title, db_combined_text])
-        similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])
-        return similarity[0][0]  # 返回相似度分數
-    except Exception as e:
-        logging.error(f"Error in computing similarity: {e}")
-        return 0
-
 # 从数据库查找与输入标题最相似的记录
 def get_closest_match_from_database(input_title):
     connection = get_database_connection()
@@ -121,6 +109,14 @@ def get_closest_match_from_database(input_title):
     finally:
         cursor.close()
         connection.close()
+
+# 计算简单文本相似度
+def compute_similarity(input_title, db_combined_text):
+    input_words = set(jieba.lcut(input_title))
+    db_words = set(jieba.lcut(db_combined_text))
+    common_words = input_words.intersection(db_words)
+    total_words = input_words.union(db_words)
+    return len(common_words) / len(total_words)
 
 # API 路由
 @app.route('/predict', methods=['POST'])
