@@ -1,4 +1,4 @@
-import os
+import jieba  # 确保导入 jieba 模块
 import json
 import keras as kr
 import numpy as np
@@ -7,8 +7,10 @@ import jieba.posseg as pseg
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import mysql.connector
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import logging
+
 
 # 初始化日志记录
 logging.basicConfig(level=logging.INFO)
