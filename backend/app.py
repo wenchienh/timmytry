@@ -7,9 +7,9 @@ import jieba.posseg as pseg
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import mysql.connector
-from rank_bm25 import BM25Okapi
+from rank_bm25 import BM25Okapi  # BM25 实现
 import logging
-import time
+import time  # 引入时间模块用于计时
 
 # 初始化日志记录
 logging.basicConfig(level=logging.INFO)
@@ -20,7 +20,7 @@ CORS(app)
 
 # 全局参数
 MAX_SEQUENCE_LENGTH = 20
-SIMILARITY_THRESHOLD = 1.5  # BM25 阈值
+SIMILARITY_THRESHOLD = 1.5  # BM25 阈值，通常调整为 1.2 到 2.0 的范围
 
 # 模型及数据的相对路径
 MODEL_PATH = os.getenv("MODEL_PATH", "FNCwithLSTM.h5")
@@ -46,20 +46,22 @@ def get_database_connection():
 
 # 加载已训练的模型
 try:
+    start_time = time.time()
     model = kr.models.load_model(MODEL_PATH)
-    logging.info("Model loaded successfully.")
+    logging.info(f"Model loaded successfully. Time taken: {time.time() - start_time:.4f} seconds")
 except Exception as e:
     logging.error(f"Error loading model: {e}")
     model = None
 
 # 加载 word_index.json 并还原 Tokenizer
 try:
+    start_time = time.time()
     with open(WORD_INDEX_PATH, 'r', encoding='utf-8') as f:
         word_index = json.load(f)
     tokenizer = tf.keras.preprocessing.text.Tokenizer(num_words=10000)  # 添加 num_words 参数
     tokenizer.word_index = word_index
     tokenizer.index_word = {index: word for word, index in word_index.items()}
-    logging.info("Tokenizer restored successfully.")
+    logging.info(f"Tokenizer restored successfully. Time taken: {time.time() - start_time:.4f} seconds")
 except Exception as e:
     logging.error(f"Error loading tokenizer: {e}")
     tokenizer = None
@@ -67,7 +69,7 @@ except Exception as e:
 # 分词函数
 def jieba_tokenizer(text):
     words = pseg.cut(text)
-    return [word for word, flag in words if flag != 'x']
+    return [word for word, flag in words if flag != 'x']  # 返回分词后的列表
 
 # 预处理函数
 def preprocess_texts(title):
@@ -84,16 +86,7 @@ def predict_category(input_title, database_title):
         raise ValueError("Model is not loaded.")
     input_processed = preprocess_texts(input_title)
     db_processed = preprocess_texts(database_title)
-
-    logging.info(f"Input shape: {input_processed.shape}, DB shape: {db_processed.shape}")
-
     predictions = model.predict([input_processed, db_processed])
-
-    logging.info(f"Predictions shape: {predictions.shape}, Predictions: {predictions}")
-
-    if predictions.ndim != 2 or predictions.shape[1] != 2:  # 确保输出形状正确
-        raise ValueError("Model output shape is incorrect. Expected [batch_size, 2].")
-
     return predictions
 
 # 从数据库查找与输入标题最相似的记录（使用 BM25）
@@ -103,6 +96,7 @@ def get_best_match_bm25(input_title):
         return None
 
     try:
+        start_time = time.time()
         cursor = connection.cursor(dictionary=True)
         query = """
         SELECT id, title, content, classification
@@ -111,14 +105,19 @@ def get_best_match_bm25(input_title):
         """
         cursor.execute(query)
         results = cursor.fetchall()
+        logging.info(f"Database query time: {time.time() - start_time:.4f} seconds")
 
         # 分词处理
+        start_time = time.time()
         corpus = [jieba_tokenizer(row["title"] + " " + row["content"]) for row in results]
         bm25 = BM25Okapi(corpus)
+        logging.info(f"BM25 corpus preparation time: {time.time() - start_time:.4f} seconds")
 
         # 计算 BM25 分数
         input_tokens = jieba_tokenizer(input_title)
+        start_time = time.time()
         scores = bm25.get_scores(input_tokens)
+        logging.info(f"BM25 scoring time: {time.time() - start_time:.4f} seconds")
 
         # 找到最高分的记录
         best_index = np.argmax(scores)
@@ -148,27 +147,18 @@ def predict():
         if len(input_title) < 3:
             return jsonify({'error': 'Title is too short'}), 400
 
-        # 计时：数据库查询
-        db_query_start = time.time()
+        # 获取数据库中最佳匹配项
         best_match = get_best_match_bm25(input_title)
-        db_query_end = time.time()
-        logging.info(f"Database query time: {db_query_end - db_query_start:.4f} seconds")
-
         if not best_match:
             return jsonify({'error': 'No sufficiently similar data found in the database'}), 404
 
-        # 计时：模型预测
-        model_predict_start = time.time()
+        # 使用模型进行预测
+        input_preprocess_time = time.time()
         probabilities = predict_category(input_title, best_match["title"])
-        model_predict_end = time.time()
-        logging.info(f"Model prediction time: {model_predict_end - model_predict_start:.4f} seconds")
-
-        # 总耗时
-        end_time = time.time()
-        logging.info(f"Total API execution time: {end_time - start_time:.4f} seconds")
-
+        logging.info(f"Model prediction time: {time.time() - input_preprocess_time:.4f} seconds")
         category_index = np.argmax(probabilities)
-        category = "fake" if category_index == 1 else "real"
+        categories = ["unrelated", "agreed", "disagreed"]
+        category = categories[category_index]
 
         response = {
             'input_title': input_title,
@@ -176,12 +166,10 @@ def predict():
             'matched_content': best_match["content"],
             'bm25_score': best_match["bm25_score"],
             'category': category,
-            'probabilities': {
-                'fake': float(probabilities[0][1]),
-                'real': float(probabilities[0][0])
-            },
+            'probabilities': {cat: float(probabilities[0][i]) for i, cat in enumerate(categories)},  # 输出所有类别的概率
             'database_entry': best_match
         }
+        logging.info(f"Total API processing time: {time.time() - start_time:.4f} seconds")
         logging.info(f"Response data: {response}")
         return jsonify(response)
 
