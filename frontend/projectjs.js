@@ -1,19 +1,19 @@
-// 初始化：监听提交按钮点击事件
+// 初始化：監聽提交按鈕點擊事件
 document.getElementById('submit-btn').addEventListener('click', async function () {
     const inputText = document.getElementById('inputtext').value.trim();
 
-    // 验证用户是否输入内容
+    // 驗證使用者是否輸入內容
     if (!inputText) {
-        alert('请先输入内容！');
+        alert('請先輸入內容！');
         return;
     }
 
-    // 显示加载动画
+    // 顯示加載動畫
     const loadingIndicator = document.getElementById('loading');
     loadingIndicator.style.display = 'block';
 
     try {
-        // 向后端发送请求
+        // 向後端發送請求
         const response = await fetch('https://timmytry.onrender.com/predict', {
             method: 'POST',
             headers: {
@@ -22,90 +22,96 @@ document.getElementById('submit-btn').addEventListener('click', async function (
             body: JSON.stringify({ title: inputText }),
         });
 
-        // 检查请求是否成功
+        // 檢查請求是否成功
         if (!response.ok) {
-            throw new Error(`服务器返回错误: ${response.status} ${response.statusText}`);
+            throw new Error(`伺服器返回錯誤: ${response.status} ${response.statusText}`);
         }
 
-        // 解析后端返回的 JSON 数据
+        // 解析後端返回的 JSON 資料
         const data = await response.json();
 
-        // 隐藏加载动画
+        // 隱藏加載動畫
         loadingIndicator.style.display = 'none';
 
-        // 显示结果或错误信息
+        // 顯示結果或錯誤訊息
         if (data.error) {
             updateResultError(data.error);
         } else {
             updateResult(data);
         }
     } catch (error) {
-        // 隐藏加载动画
+        // 隱藏加載動畫
         loadingIndicator.style.display = 'none';
-        console.error('请求失败:', error.message);
-        alert(`请求失败，请稍后重试！错误信息：${error.message}`);
+        console.error('請求失敗:', error.message);
+        alert(`請求失敗，請稍後重試！錯誤訊息：${error.message}`);
     }
 });
 
-// 更新分析结果到页面
+// 更新分析結果到頁面
 function updateResult(data) {
     const resultSection = document.getElementById('result');
     const resultText = document.getElementById('result-text');
     const resultTimestamp = document.getElementById('result-timestamp');
 
-    // 更新结果内容
+    // 更新結果內容
     resultText.innerHTML = `
-        <strong>分析结果：</strong> ${data.category === 'fake' ? '假消息' : '真消息'}<br>
-        <strong>假消息概率：</strong> ${(data.probabilities.fake * 100).toFixed(2)}%<br>
-        <strong>真消息概率：</strong> ${(data.probabilities.real * 100).toFixed(2)}%<br>
-        <strong>相关标题：</strong> ${data.matched_title || '无匹配标题'}<br>
-        <strong>内容摘要：</strong> ${data.database_entry?.content || '无匹配内容'}
+        <strong>分析結果：</strong> ${data.category === 'fake' ? '假消息' : '真消息'}<br>
+        <strong>假消息機率：</strong> ${(data.probabilities.fake * 100).toFixed(2)}%<br>
+        <strong>真消息機率：</strong> ${(data.probabilities.real * 100).toFixed(2)}%<br>
+        <strong>相關標題：</strong> ${data.matched_title || '無匹配標題'}<br>
+        <strong>內容摘要：</strong> ${data.database_entry?.content || '無匹配內容'}
     `;
 
-    // 显示查询时间戳
+    // 顯示查詢時間戳
     const currentTime = new Date().toLocaleString();
-    resultTimestamp.textContent = `查询时间：${currentTime}`;
+    resultTimestamp.textContent = `查詢時間：${currentTime}`;
 
-    // 显示结果区域
+    // 顯示結果區域
     resultSection.style.display = 'block';
+
+    // 平滑滾動到結果部分
+    smoothScroll('#result');
 }
 
-// 更新错误信息到页面
+// 更新錯誤訊息到頁面
 function updateResultError(errorMessage) {
     const resultSection = document.getElementById('result');
     const resultText = document.getElementById('result-text');
     const resultTimestamp = document.getElementById('result-timestamp');
 
-    // 显示错误信息
-    resultText.innerHTML = `<strong>错误：</strong>${errorMessage}`;
+    // 顯示錯誤訊息
+    resultText.innerHTML = `<strong>錯誤：</strong>${errorMessage}`;
 
-    // 显示当前时间戳
+    // 顯示當前時間戳
     const currentTime = new Date().toLocaleString();
-    resultTimestamp.textContent = `查询时间：${currentTime}`;
+    resultTimestamp.textContent = `查詢時間：${currentTime}`;
 
-    // 显示结果区域
+    // 顯示結果區域
     resultSection.style.display = 'block';
+
+    // 平滑滾動到結果部分
+    smoothScroll('#result');
 }
 
-// 平滑滚动功能
+// 平滑滾動功能
 function smoothScroll(target) {
     const element = document.querySelector(target);
     element.scrollIntoView({ behavior: 'smooth' });
 }
 
-// 重置结果区域的内容
+// 重置結果區域的內容
 function resetResult() {
     const resultSection = document.getElementById('result');
     const resultText = document.getElementById('result-text');
     const resultTimestamp = document.getElementById('result-timestamp');
 
-    // 清空内容
+    // 清空內容
     resultText.innerHTML = '';
     resultTimestamp.textContent = '';
 
-    // 隐藏结果区域
+    // 隱藏結果區域
     resultSection.style.display = 'none';
 }
 
-// 监听重置按钮点击事件
+// 監聽重置按鈕點擊事件
 document.querySelector('button[type="reset"]').addEventListener('click', resetResult);
