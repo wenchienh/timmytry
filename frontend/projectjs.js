@@ -109,3 +109,11 @@ function resetResult() {
 
 // 监听重置按钮点击事件
 document.querySelector('button[type="reset"]').addEventListener('click', resetResult);
+
+
+var textarea = document.querySelector('textarea');
+        
+textarea.addEventListener('input', (e) => {
+    textarea.style.height = '230px';
+    textarea.style.height = e.target.scrollHeight + 'px';
+});
